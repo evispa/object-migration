@@ -1,0 +1,26 @@
+{
+    "name": "evispa/object-migration",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Nerijus Arlauskas",
+            "email": "nercury@gmail.com"
+        },
+        {
+            "name": "Darius Krištapavičius",
+            "email": "darius@evispa.lt"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.2",
+        "clue/graph": "dev-master",
+        "doctrine/annotations": "*"
+    },
+    "type": "library",
+    "autoload": {
+        "psr-0": {
+            "Evispa\\ObjectMigration": "src/"
+        }
+    },
+    "description": "Migrations between object versions, configurable via annotations."
+}
