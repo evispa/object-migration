@@ -19,7 +19,7 @@
     "type": "library",
     "autoload": {
         "psr-0": {
-            "Evispa\\ObjectMigration": "src/"
+            "Evispa\\ObjectMigration": "src"
         }
     },
     "description": "Migrations between object versions, configurable via annotations."

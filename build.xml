@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project default="build">
+    <property name="workspace" value="${basedir}" />
+    <property name="sourcedir" value="${basedir}/src" />
+    <property name="builddir" value="${workspace}/build" />
+
+    <target name="build" depends="prepare"/>
+
+    <target name="clean" description="Cleanup build artifacts">
+        <delete dir="${builddir}/logs"/>
+        <delete dir="${workspace}/vendor"/>
+        <delete file="${workspace}/composer.phar"/>
+    </target>
+
+    <target name="prepare" depends="clean" description="Prepare for build">
+        <mkdir dir="${builddir}/logs"/>
+
+        <exec executable="wget">
+            <arg value="http://getcomposer.org/composer.phar" />
+        </exec>
+
+        <exec executable="php">
+            <arg value="composer.phar"/>
+            <arg value="update"/>
+            <arg value="--dev"/>
+        </exec>
+    </target>
+
+    <target name="lint" description="Perform syntax check of sourcecode files">
+        <apply executable="php" failonerror="true">
+            <arg value="-l" />
+            <fileset dir="${sourcedir}">
+                <include name="**/*.php" />
+                <modified />
+            </fileset>
+            <fileset dir="${basedir}/src/">
+                <include name="**/*Test.php" />
+                <modified />
+            </fileset>
+        </apply>
+    </target>
+
+    <target name="phpcs-ci" description="Find coding standard violations using PHP_CodeSniffer creating a log file for the continuous integration server">
+        <exec executable="phpcs">
+            <arg value="-p" />
+            <arg value="--report=checkstyle" />
+            <arg value="--report-file=${builddir}/logs/checkstyle.xml" />
+            <arg value="--standard=PSR2" />
+            <arg value="--extensions=php" />
+            <arg path="${sourcedir}" />
+        </exec>
+    </target>
+
+    <target name="phpunit" description="Run unit tests with PHPUnit">
+        <exec executable="phpunit" failonerror="true">
+            <arg value="--debug" />
+            <arg value="-c" />
+            <arg value="${basedir}/phpunit.xml" />
+        </exec>
+    </target>
+
+</project>

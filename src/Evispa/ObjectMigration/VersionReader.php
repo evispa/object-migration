@@ -102,6 +102,7 @@ class VersionReader
      *
      * @param string $className
      *
+     * @throws \LogicException
      * @return MethodInfo[]
      */
     public function getClassMigrationMethodInfo($className)

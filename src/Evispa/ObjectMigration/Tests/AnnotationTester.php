@@ -22,12 +22,52 @@
  */
 
 /**
- *
+ * @author Darius Krištapavičius <darius@evispa.lt>
  */
 
 namespace Evispa\ObjectMigration\Tests;
 
+use Evispa\ObjectMigration\VersionConverter;
+use Evispa\ObjectMigration\VersionReader;
+
 class AnnotationTester
 {
-    
+    /**
+     * @var VersionConverter
+     */
+    protected $versionConverter;
+
+    /**
+     * @var VersionReader
+     */
+    protected $versionReader;
+
+    public function __construct($versionConverter, $versionReader)
+    {
+        $this->versionConverter = $versionConverter;
+        $this->versionReader = $versionReader;
+    }
+
+    public function testAllVariations()
+    {
+        $migrationAnnotations = $this->getClassMigrationMethodInfo($startFromClassName);
+        /** @var MethodInfo $methodInfo */
+        foreach ($migrationAnnotations as $methodInfo) {
+            if ($methodInfo->annotation->from && !in_array($methodInfo->annotation->from, $visited)) {
+                $visited[] = $methodInfo->annotation->from;
+                $className = $this->getClassNameByVersion($methodInfo->annotation->from, $version, $visited);
+                if ($className) {
+                    return $className;
+                }
+            }
+
+            if ($methodInfo->annotation->to && !in_array($methodInfo->annotation->to, $visited)) {
+                $visited[] = $methodInfo->annotation->to;
+                $className = $this->getClassNameByVersion($methodInfo->annotation->to, $version, $visited);
+                if ($className) {
+                    return $className;
+                }
+            }
+        }
+    }
 }
