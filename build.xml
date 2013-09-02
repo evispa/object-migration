@@ -8,7 +8,7 @@
     <target name="build" depends="prepare"/>
 
     <target name="clean" description="Cleanup build artifacts">
-        <delete dir="${builddir}/logs"/>
+        <delete dir="${builddir}"/>
         <delete dir="${workspace}/vendor"/>
         <delete file="${workspace}/composer.phar"/>
     </target>
