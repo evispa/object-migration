@@ -1,3 +1,8 @@
+Object migration library
+--------
+
+Build Status: ![Build Status](http://dev.evispa.lt:81/buildStatus/icon?job=evispa-object-migration)
+
 Overview
 --------
 
