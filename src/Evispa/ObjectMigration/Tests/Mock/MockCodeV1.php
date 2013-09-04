@@ -55,6 +55,10 @@ class MockCodeV1
      */
     public static function fromCodeV0($other, $options)
     {
+        $obj = new MockCodeV1();
+        $obj->code = $other->code;
+        $obj->version = $other->version . ' => ' . $obj->version;
 
+        return $obj;
     }
 }

@@ -42,8 +42,8 @@ class VersionPathSearchTest extends \PHPUnit_Framework_TestCase
             'Evispa\ObjectMigration\Tests\Mock\MockCodeV4'
         );
 
-        $this->assertEquals('Evispa\ObjectMigration\Tests\Mock\MockCodeV3', $result[0]->action->method->class);
-        $this->assertEquals('toCodeV2', $result[0]->action->method->name);
+        $this->assertEquals('Evispa\ObjectMigration\Tests\Mock\MockCodeV2', $result[0]->action->method->class);
+        $this->assertEquals('fromCodeV3', $result[0]->action->method->name);
 
         $this->assertEquals('Evispa\ObjectMigration\Tests\Mock\MockCodeV4', $result[1]->action->method->class);
         $this->assertEquals('fromCodeV2', $result[1]->action->method->name);

@@ -41,7 +41,8 @@ class VersionConverterTest extends \PHPUnit_Framework_TestCase
     {
         $converter = new VersionConverter(
             new VersionReader(new AnnotationReader()),
-            'Evispa\ObjectMigration\Tests\Mock\MockCodeV4'
+            'Evispa\ObjectMigration\Tests\Mock\MockCodeV4',
+            array('locale' => 'en')
         );
 
         $codeV1 = new MockCodeV1();
@@ -57,7 +58,8 @@ class VersionConverterTest extends \PHPUnit_Framework_TestCase
     {
         $converter = new VersionConverter(
             new VersionReader(new AnnotationReader()),
-            'Evispa\ObjectMigration\Tests\Mock\MockCodeV1'
+            'Evispa\ObjectMigration\Tests\Mock\MockCodeV1',
+            array('locale' => 'en')
         );
 
         $codeV4 = new MockCodeV4();
@@ -73,7 +75,8 @@ class VersionConverterTest extends \PHPUnit_Framework_TestCase
     {
         $converter = new VersionConverter(
             new VersionReader(new AnnotationReader()),
-            'Evispa\ObjectMigration\Tests\Mock\MockCodeV0'
+            'Evispa\ObjectMigration\Tests\Mock\MockCodeV0',
+            array('locale' => 'en')
         );
 
         $codeV4 = new MockCodeV4();

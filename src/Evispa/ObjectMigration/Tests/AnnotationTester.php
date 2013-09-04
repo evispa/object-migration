@@ -43,8 +43,6 @@ class AnnotationTester
      */
     protected $versionReader;
 
-    protected $visited = array();
-
     public function __construct($versionConverter, $versionReader)
     {
         $this->versionConverter = $versionConverter;
@@ -60,8 +58,7 @@ class AnnotationTester
         $class = new \ReflectionClass($this->versionConverter->getClassName());
         $object = $class->newInstance();
 
-        $visited = array();
-        $this->migrateTo($object, $visited);
+        $this->migrateTo($object);
     }
 
     /**
@@ -71,14 +68,28 @@ class AnnotationTester
      * @param $fromObject
      * @param $visited
      */
-    private function migrateTo($fromObject, &$visited)
+    private function migrateTo($fromObject, &$visited = array())
     {
         $className = get_class($fromObject);
         $migrations = $this->versionReader->getClassMigrationMethodInfo($className);
 
         /** @var MethodInfo $methodInfo */
         foreach ($migrations as $methodInfo) {
-            if ($methodInfo->annotation->to && !in_array($methodInfo->annotation->to, $this->visited)) {
+            if ($methodInfo->annotation->to && !in_array($methodInfo->annotation->to, $visited)) {
+                array_push($visited, $methodInfo->annotation->to);
+                $newObject = $methodInfo->action->run(clone $fromObject, $this->versionConverter->getOptions());
+                $this->migrateTo($newObject, $visited);
+            }
+        }
+    }
+
+    private function migrateFrom($fromClassName, &$paths, &$visited = array())
+    {
+        $migrations = $this->versionReader->getClassMigrationMethodInfo($fromClassName);
+
+        /** @var MethodInfo $methodInfo */
+        foreach ($migrations as $methodInfo) {
+            if ($methodInfo->annotation->from && !in_array($methodInfo->annotation->from, $this->visited)) {
                 array_push($this->visited, $methodInfo->annotation->to);
                 $newObject = $methodInfo->action->run(clone $fromObject, $this->versionConverter->getOptions());
                 $this->migrateTo($newObject, $visited);
