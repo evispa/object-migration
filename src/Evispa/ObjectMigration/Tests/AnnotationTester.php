@@ -85,10 +85,13 @@ class AnnotationTester
                 $migrationId = $this->getMigrationId($migration);
 
                 if (false === in_array($migrationId, $visited)) {
+                    // mark as visited
                     array_push($visited, $migrationId);
+
                     $newObject = $methodInfo->action->run(clone $fromObject, $this->versionConverter->getOptions());
 
-                    $this->testedMigrations['to'][] = $migration;
+                    // add to log for testing
+                    array_push($this->testedMigrations['to'], $migration);
 
                     $this->migrateTo($newObject, $visited);
                 }
@@ -119,9 +122,11 @@ class AnnotationTester
                 $migrationId = $this->getMigrationId($migration);
 
                 if (false === in_array($migrationId, $visited)) {
+                    // mark as visited
                     array_push($visited, $migrationId);
 
-                    $this->testedMigrations['from'][] = $migration;
+                    // add to log for testing
+                    array_push($this->testedMigrations['from'], $migration);
 
                     $migrationsPath = $path;
                     $migrationsPath[] = $methodInfo;
