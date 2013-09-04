@@ -27,6 +27,7 @@
 
 namespace Evispa\ObjectMigration\Tests;
 
+use Evispa\ObjectMigration\Migration\MethodInfo;
 use Evispa\ObjectMigration\VersionConverter;
 use Evispa\ObjectMigration\VersionReader;
 
@@ -42,31 +43,45 @@ class AnnotationTester
      */
     protected $versionReader;
 
+    protected $visited = array();
+
     public function __construct($versionConverter, $versionReader)
     {
         $this->versionConverter = $versionConverter;
         $this->versionReader = $versionReader;
     }
 
+    /**
+     * Walks through all migrations functions
+     * With empty objects
+     */
     public function testAllVariations()
     {
-        $migrationAnnotations = $this->getClassMigrationMethodInfo($startFromClassName);
-        /** @var MethodInfo $methodInfo */
-        foreach ($migrationAnnotations as $methodInfo) {
-            if ($methodInfo->annotation->from && !in_array($methodInfo->annotation->from, $visited)) {
-                $visited[] = $methodInfo->annotation->from;
-                $className = $this->getClassNameByVersion($methodInfo->annotation->from, $version, $visited);
-                if ($className) {
-                    return $className;
-                }
-            }
+        $class = new \ReflectionClass($this->versionConverter->getClassName());
+        $object = $class->newInstance();
 
-            if ($methodInfo->annotation->to && !in_array($methodInfo->annotation->to, $visited)) {
-                $visited[] = $methodInfo->annotation->to;
-                $className = $this->getClassNameByVersion($methodInfo->annotation->to, $version, $visited);
-                if ($className) {
-                    return $className;
-                }
+        $visited = array();
+        $this->migrateTo($object, $visited);
+    }
+
+    /**
+     * Walks through all migrateTo functions
+     * With empty object
+     *
+     * @param $fromObject
+     * @param $visited
+     */
+    private function migrateTo($fromObject, &$visited)
+    {
+        $className = get_class($fromObject);
+        $migrations = $this->versionReader->getClassMigrationMethodInfo($className);
+
+        /** @var MethodInfo $methodInfo */
+        foreach ($migrations as $methodInfo) {
+            if ($methodInfo->annotation->to && !in_array($methodInfo->annotation->to, $this->visited)) {
+                array_push($this->visited, $methodInfo->annotation->to);
+                $newObject = $methodInfo->action->run(clone $fromObject, $this->versionConverter->getOptions());
+                $this->migrateTo($newObject, $visited);
             }
         }
     }

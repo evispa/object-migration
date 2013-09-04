@@ -35,13 +35,18 @@ use Evispa\ObjectMigration\Annotations as Api;
 class MockCodeV3
 {
     public $code;
+    public $version = 'v3';
 
     /**
-     * @Api\Migration(to="Evispa\ObjectMigration\Tests\Mock\MockCodeV2")
+     * @Api\Migration(to="Evispa\ObjectMigration\Tests\Mock\MockCodeV2", require={"locale"})
      */
     public function toCodeV2($options)
     {
+        $obj = new MockCodeV2();
+        $obj->code = $this->code;
+        $obj->version = $this->version . ' => ' . $obj->version;
 
+        return $obj;
     }
 
     /**
@@ -51,6 +56,7 @@ class MockCodeV3
     {
         $v1 = new MockCodeV1();
         $v1->code = $this->code;
+        $v1->version = $this->version . ' => ' . $v1->version;
 
         return $v1;
     }

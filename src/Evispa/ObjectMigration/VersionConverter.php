@@ -69,6 +69,22 @@ class VersionConverter
     }
 
     /**
+     * @return string
+     */
+    public function getClassName()
+    {
+        return $this->className;
+    }
+
+    /**
+     * @return array
+     */
+    public function getOptions()
+    {
+        return $this->options;
+    }
+
+    /**
      * Migrate object to specified version.
      *
      * @param mixed  $object       Object instance.

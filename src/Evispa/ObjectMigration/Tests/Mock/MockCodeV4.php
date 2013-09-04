@@ -35,6 +35,7 @@ use Evispa\ObjectMigration\Annotations as Api;
 class MockCodeV4
 {
     public $code;
+    public $version = 'v4';
 
     /**
      * @Api\Migration(from="Evispa\ObjectMigration\Tests\Mock\MockCodeV2")
@@ -51,6 +52,7 @@ class MockCodeV4
     {
         $v3 = new MockCodeV3();
         $v3->code = $this->code;
+        $v3->version = $this->version . ' => ' . $v3->version;
 
         return $v3;
     }

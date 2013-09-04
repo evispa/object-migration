@@ -25,41 +25,32 @@
  * @author Darius Krištapavičius <darius@evispa.lt>
  */
 
-namespace Evispa\ObjectMigration\Tests\Mock;
+namespace Evispa\ObjectMigration\Tests;
 
-use Evispa\ObjectMigration\Annotations as Api;
+use Doctrine\Common\Annotations\AnnotationReader;
+use Evispa\ObjectMigration\VersionConverter;
+use Evispa\ObjectMigration\VersionReader;
 
-/**
- * @Api\Version("vnd.evispa.simple-code.v2")
- */
-class MockCodeV2
+class AnnotationTesterTest extends \PHPUnit_Framework_TestCase
 {
-    public $version = 'v2';
-
-    /**
-     * @Api\Migration(from="Evispa\ObjectMigration\Tests\Mock\MockCodeV1")
-     */
-    public static function fromCodeV1($other, $options)
+    public function testTester()
     {
+        $versionReader = new VersionReader(new AnnotationReader());
+        $versionConverter = new VersionConverter($versionReader, 'Evispa\ObjectMigration\Tests\Mock\MockCodeV4', array('locale' => 'lt'));
 
+        $tester = new AnnotationTester($versionConverter, $versionReader);
+        $tester->testAllVariations();
     }
 
     /**
-     * @Api\Migration(from="Evispa\ObjectMigration\Tests\Mock\MockCodeV3")
+     * @expectedException \LogicException
      */
-    public static function fromCodeV3($other, $options)
+    public function testOptionsException()
     {
+        $versionReader = new VersionReader(new AnnotationReader());
+        $versionConverter = new VersionConverter($versionReader, 'Evispa\ObjectMigration\Tests\Mock\MockCodeV4');
 
-    }
-
-    /**
-     * @Api\Migration(to="Evispa\ObjectMigration\Tests\Mock\MockCodeV1")
-     */
-    public function toCodeV1($options)
-    {
-        $obj = new MockCodeV1();
-        $obj->version = $this->version . ' => ' . $obj->version;
-
-        return $obj;
+        $tester = new AnnotationTester($versionConverter, $versionReader);
+        $tester->testAllVariations();
     }
 }

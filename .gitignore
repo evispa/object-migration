@@ -1,5 +1,5 @@
-./.idea/*
-./build/
-./vendor/
-./composer.phar
-./cache.properties
+/.idea/
+/build/
+/vendor/
+/composer.phar
+/cache.properties
