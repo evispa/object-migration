@@ -41,15 +41,23 @@ class MockCodeV2
      */
     public static function fromCodeV1($other, $options)
     {
+        $obj = new self();
+        $obj->code = $other->code;
+        $obj->version = $other->version . ' => ' . $obj->version;
 
+        return $obj;
     }
 
     /**
-     * @Api\Migration(from="Evispa\ObjectMigration\Tests\Mock\MockCodeV3")
+     * @Api\Migration(from="Evispa\ObjectMigration\Tests\Mock\MockCodeV3", require={"locale"})
      */
     public static function fromCodeV3($other, $options)
     {
+        $obj = new self();
+        $obj->code = $other->code;
+        $obj->version = $other->version . ' => ' . $obj->version;
 
+        return $obj;
     }
 
     /**

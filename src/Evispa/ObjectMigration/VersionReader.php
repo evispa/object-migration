@@ -160,7 +160,7 @@ class VersionReader
 
             }
 
-            $annotations[] = new MethodInfo($action, $migrationAnnotation);
+            $annotations[] = new MethodInfo($method->name, $action, $migrationAnnotation);
         }
 
         return $annotations;

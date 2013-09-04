@@ -36,6 +36,13 @@ use Evispa\ObjectMigration\Annotations\Migration;
 class MethodInfo
 {
     /**
+     * Method name
+     *
+     * @var String
+     */
+    public $name;
+
+    /**
      * Method reflection.
      * 
      * @var MigrationActionInterface
@@ -49,8 +56,9 @@ class MethodInfo
      */
     public $annotation;
 
-    public function __construct(MigrationActionInterface $action, \Evispa\ObjectMigration\Annotations\Migration $annotation)
+    public function __construct($name, MigrationActionInterface $action, \Evispa\ObjectMigration\Annotations\Migration $annotation)
     {
+        $this->name = $name;
         $this->action = $action;
         $this->annotation = $annotation;
     }

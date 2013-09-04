@@ -38,7 +38,7 @@ class MockCodeV3
     public $version = 'v3';
 
     /**
-     * @Api\Migration(to="Evispa\ObjectMigration\Tests\Mock\MockCodeV2", require={"locale"})
+     * @Api\Migration(to="Evispa\ObjectMigration\Tests\Mock\MockCodeV2")
      */
     public function toCodeV2($options)
     {

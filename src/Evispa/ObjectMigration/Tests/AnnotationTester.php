@@ -55,10 +55,12 @@ class AnnotationTester
      */
     public function testAllVariations()
     {
-        $class = new \ReflectionClass($this->versionConverter->getClassName());
+        $className = $this->versionConverter->getClassName();
+        $class = new \ReflectionClass($className);
         $object = $class->newInstance();
 
         $this->migrateTo($object);
+        $this->migrateFrom($className);
     }
 
     /**
@@ -75,26 +77,58 @@ class AnnotationTester
 
         /** @var MethodInfo $methodInfo */
         foreach ($migrations as $methodInfo) {
-            if ($methodInfo->annotation->to && !in_array($methodInfo->annotation->to, $visited)) {
-                array_push($visited, $methodInfo->annotation->to);
+            $methodId = $className . '->' . $methodInfo->name;
+
+            if ($methodInfo->annotation->to && !in_array($methodId, $visited)) {
+                array_push($visited, $methodId);
                 $newObject = $methodInfo->action->run(clone $fromObject, $this->versionConverter->getOptions());
                 $this->migrateTo($newObject, $visited);
             }
         }
     }
 
-    private function migrateFrom($fromClassName, &$paths, &$visited = array())
+    /**
+     * Walks through all migrateFrom functions
+     * With empty object
+     *
+     * @param $fromClassName
+     * @param $path
+     * @param $visited
+     */
+    private function migrateFrom($fromClassName, $path = array(), &$visited = array())
     {
         $migrations = $this->versionReader->getClassMigrationMethodInfo($fromClassName);
 
+        $found = false;
+
         /** @var MethodInfo $methodInfo */
         foreach ($migrations as $methodInfo) {
-            if ($methodInfo->annotation->from && !in_array($methodInfo->annotation->from, $this->visited)) {
-                array_push($this->visited, $methodInfo->annotation->to);
-                $newObject = $methodInfo->action->run(clone $fromObject, $this->versionConverter->getOptions());
-                $this->migrateTo($newObject, $visited);
+
+            $methodId = $fromClassName . '::' . $methodInfo->name;
+
+            if ($methodInfo->annotation->from && !in_array($methodId, $visited)) {
+                array_push($visited, $methodId);
+
+                $migrationsPath = $path;
+                $migrationsPath[] = $methodInfo;
+
+                $this->migrateFrom($methodInfo->annotation->from, $migrationsPath, $visited);
+                $found = true;
             }
         }
+
+        if (false === $found) {
+            $path = array_reverse($path);
+
+            $class = new \ReflectionClass($fromClassName);
+            $object = $class->newInstance();
+
+            /** @var MethodInfo $methodInfo */
+            foreach ($path as $methodInfo) {
+                $object = $methodInfo->action->run($object, $this->versionConverter->getOptions());
+            }
+        }
+
     }
-    
+
 }

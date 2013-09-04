@@ -42,7 +42,11 @@ class MockCodeV4
      */
     public static function fromCodeV2($other, $options)
     {
+        $obj = new self();
+        $obj->code = $other->code;
+        $obj->version = $other->version . ' => ' . $obj->version;
 
+        return $obj;
     }
 
     /**
