@@ -108,7 +108,8 @@ class AnnotationTester
     {
         $migrations = $this->versionReader->getClassMigrationMethodInfo($fromClassName);
 
-        $found = false;
+        // farther version found
+        $found = true;
 
         /** @var MethodInfo $methodInfo */
         foreach ($migrations as $methodInfo) {
@@ -127,21 +128,32 @@ class AnnotationTester
 
                     $this->migrateFrom($methodInfo->annotation->from, $migrationsPath, $visited);
 
-                    $found = true;
+                    $found = false;
                 }
             }
         }
 
-        if (false === $found) {
-            $path = array_reverse($path);
+        if (true === $found) {
+            $this->migrateFromPath($fromClassName, $path);
+        }
+    }
 
-            $class = new \ReflectionClass($fromClassName);
-            $object = $class->newInstance();
+    /**
+     * Create farther version object, run all migrations in path
+     *
+     * @param string $fromClassName
+     * @param array $path
+     */
+    private function migrateFromPath($fromClassName, $path)
+    {
+        $path = array_reverse($path);
 
-            /** @var MethodInfo $methodInfo */
-            foreach ($path as $methodInfo) {
-                $object = $methodInfo->action->run($object, $this->versionConverter->getOptions());
-            }
+        $class = new \ReflectionClass($fromClassName);
+        $object = $class->newInstance();
+
+        /** @var MethodInfo $methodInfo */
+        foreach ($path as $methodInfo) {
+            $object = $methodInfo->action->run($object, $this->versionConverter->getOptions());
         }
     }
 
