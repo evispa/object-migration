@@ -49,6 +49,7 @@ class AnnotationTester
     {
         $this->versionConverter = $versionConverter;
         $this->versionReader = $versionReader;
+        $this->testedMigrations = array('from' => array(), 'to' => array());
     }
 
     /**

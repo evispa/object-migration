@@ -28,6 +28,7 @@
 namespace Evispa\ObjectMigration\Tests;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use Evispa\ObjectMigration\Tests\Mock\MockCodeV0;
 use Evispa\ObjectMigration\Tests\Mock\MockCodeV1;
 use Evispa\ObjectMigration\Tests\Mock\MockCodeV2;
 use Evispa\ObjectMigration\Tests\Mock\MockCodeV3;
@@ -37,7 +38,7 @@ use Evispa\ObjectMigration\VersionReader;
 
 class AnnotationTesterTest extends \PHPUnit_Framework_TestCase
 {
-    public function testTester()
+    public function testTesterCodeV4()
     {
         $versionReader = new VersionReader(new AnnotationReader());
         $versionConverter = new VersionConverter($versionReader, 'Evispa\ObjectMigration\Tests\Mock\MockCodeV4', array('locale' => 'lt'));
@@ -120,6 +121,110 @@ class AnnotationTesterTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(5, count($tester->testedMigrations['from']));
     }
+
+    public function testTesterCodeV0()
+    {
+        $versionReader = new VersionReader(new AnnotationReader());
+        $versionConverter = new VersionConverter($versionReader, 'Evispa\ObjectMigration\Tests\Mock\MockCodeV0', array('locale' => 'lt'));
+
+        $tester = new AnnotationTester($versionConverter, $versionReader);
+        $tester->testAllVariations();
+
+        $this->assertEquals(0, count($tester->testedMigrations['to']));
+
+        $this->assertTrue(
+            in_array(
+                array('from' => get_class(new MockCodeV1()), 'to' => get_class(new MockCodeV0())),
+                $tester->testedMigrations['from']
+            )
+        );
+
+        $this->assertTrue(
+            in_array(
+                array('from' => get_class(new MockCodeV3()), 'to' => get_class(new MockCodeV1())),
+                $tester->testedMigrations['from']
+            )
+        );
+
+        $this->assertTrue(
+            in_array(
+                array('from' => get_class(new MockCodeV4()), 'to' => get_class(new MockCodeV1())),
+                $tester->testedMigrations['from']
+            )
+        );
+
+        $this->assertTrue(
+            in_array(
+                array('from' => get_class(new MockCodeV2()), 'to' => get_class(new MockCodeV4())),
+                $tester->testedMigrations['from']
+            )
+        );
+
+        $this->assertTrue(
+            in_array(
+                array('from' => get_class(new MockCodeV1()), 'to' => get_class(new MockCodeV2())),
+                $tester->testedMigrations['from']
+            )
+        );
+
+        $this->assertTrue(
+            in_array(
+                array('from' => get_class(new MockCodeV3()), 'to' => get_class(new MockCodeV2())),
+                $tester->testedMigrations['from']
+            )
+        );
+
+        $this->assertEquals(6, count($tester->testedMigrations['from']));
+    }
+
+    public function testTesterCodeV3()
+    {
+        $versionReader = new VersionReader(new AnnotationReader());
+        $versionConverter = new VersionConverter($versionReader, 'Evispa\ObjectMigration\Tests\Mock\MockCodeV3', array('locale' => 'lt'));
+
+        $tester = new AnnotationTester($versionConverter, $versionReader);
+        $tester->testAllVariations();
+
+        $this->assertEquals(0, count($tester->testedMigrations['from']));
+
+        $this->assertTrue(
+            in_array(
+                array('from' => get_class(new MockCodeV3()), 'to' => get_class(new MockCodeV2())),
+                $tester->testedMigrations['to']
+            )
+        );
+
+        $this->assertTrue(
+            in_array(
+                array('from' => get_class(new MockCodeV3()), 'to' => get_class(new MockCodeV1())),
+                $tester->testedMigrations['to']
+            )
+        );
+
+        $this->assertTrue(
+            in_array(
+                array('from' => get_class(new MockCodeV2()), 'to' => get_class(new MockCodeV1())),
+                $tester->testedMigrations['to']
+            )
+        );
+
+        $this->assertTrue(
+            in_array(
+                array('from' => get_class(new MockCodeV1()), 'to' => get_class(new MockCodeV4())),
+                $tester->testedMigrations['to']
+            )
+        );
+
+        $this->assertTrue(
+            in_array(
+                array('from' => get_class(new MockCodeV4()), 'to' => get_class(new MockCodeV3())),
+                $tester->testedMigrations['to']
+            )
+        );
+
+        $this->assertEquals(5, count($tester->testedMigrations['to']));
+    }
+
 
     /**
      * @expectedException \LogicException
