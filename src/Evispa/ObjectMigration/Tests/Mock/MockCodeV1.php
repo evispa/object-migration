@@ -53,7 +53,7 @@ class MockCodeV1
     /**
      * @Api\Migration(from="Evispa\ObjectMigration\Tests\Mock\MockCodeV3")
      */
-    public static function fromCodeV0($other, $options)
+    public static function fromCodeV3($other, $options)
     {
         $obj = new self();
         $obj->code = $other->code;

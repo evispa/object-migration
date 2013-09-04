@@ -43,6 +43,8 @@ class AnnotationTester
      */
     protected $versionReader;
 
+    public $testedMigrations = array();
+
     public function __construct($versionConverter, $versionReader)
     {
         $this->versionConverter = $versionConverter;
@@ -77,12 +79,18 @@ class AnnotationTester
 
         /** @var MethodInfo $methodInfo */
         foreach ($migrations as $methodInfo) {
-            $methodId = $className . '->' . $methodInfo->name;
+            if ($methodInfo->annotation->to) {
+                $migration = array('from' => $className, 'to' => $methodInfo->annotation->to);
+                $migrationId = $this->getMigrationId($migration);
 
-            if ($methodInfo->annotation->to && !in_array($methodId, $visited)) {
-                array_push($visited, $methodId);
-                $newObject = $methodInfo->action->run(clone $fromObject, $this->versionConverter->getOptions());
-                $this->migrateTo($newObject, $visited);
+                if (false === in_array($migrationId, $visited)) {
+                    array_push($visited, $migrationId);
+                    $newObject = $methodInfo->action->run(clone $fromObject, $this->versionConverter->getOptions());
+
+                    $this->testedMigrations['to'][] = $migration;
+
+                    $this->migrateTo($newObject, $visited);
+                }
             }
         }
     }
@@ -104,16 +112,22 @@ class AnnotationTester
         /** @var MethodInfo $methodInfo */
         foreach ($migrations as $methodInfo) {
 
-            $methodId = $fromClassName . '::' . $methodInfo->name;
+            if ($methodInfo->annotation->from) {
+                $migration = array('from' => $methodInfo->annotation->from, 'to' => $fromClassName);
+                $migrationId = $this->getMigrationId($migration);
 
-            if ($methodInfo->annotation->from && !in_array($methodId, $visited)) {
-                array_push($visited, $methodId);
+                if (false === in_array($migrationId, $visited)) {
+                    array_push($visited, $migrationId);
 
-                $migrationsPath = $path;
-                $migrationsPath[] = $methodInfo;
+                    $this->testedMigrations['from'][] = $migration;
 
-                $this->migrateFrom($methodInfo->annotation->from, $migrationsPath, $visited);
-                $found = true;
+                    $migrationsPath = $path;
+                    $migrationsPath[] = $methodInfo;
+
+                    $this->migrateFrom($methodInfo->annotation->from, $migrationsPath, $visited);
+
+                    $found = true;
+                }
             }
         }
 
@@ -128,6 +142,15 @@ class AnnotationTester
                 $object = $methodInfo->action->run($object, $this->versionConverter->getOptions());
             }
         }
+    }
 
+    /**
+     * @param array $migration
+     *
+     * @return string
+     */
+    private function getMigrationId(array $migration)
+    {
+        return $migration['from'] . '_' . $migration['to'];
     }
 }
