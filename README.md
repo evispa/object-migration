@@ -63,7 +63,7 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Evispa\ObjectMigration\VersionReader;
 use Evispa\ObjectMigration\VersionConverter;
 
-$converter = new VersionConverter(new VersionReader(new AnnotationReader()));
+$converter = new VersionConverter(new VersionReader(new AnnotationReader()), 'V2');
 
 // create v1 object
 
@@ -72,7 +72,7 @@ $v1->slug = "TEST";
 
 // migrate to another version
 
-$v2 = $converter->migrate($v1, 'object.v2');
+$v2 = $converter->migrateFrom($v1);
 
 $this->assertTrue($v2 instanceof V2); // true
 $this->assertEquals("TEST", $v2->id); // true
@@ -81,7 +81,9 @@ $this->assertEquals("TEST", $v2->id); // true
 Requirements
 ------------
 
-This library will use Doctrine/Common for annotation parsing.
+This library will use:
+ * doctrine/annotations for annotation parsing
+ * clue/graph for version migrations search
 
 Installation
 ------------

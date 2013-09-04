@@ -27,7 +27,6 @@
 
 namespace Evispa\ObjectMigration\Tests;
 
-
 use Doctrine\Common\Annotations\AnnotationReader;
 use Evispa\ObjectMigration\Tests\Mock\MockCodeV0;
 use Evispa\ObjectMigration\Tests\Mock\MockCodeV1;
@@ -37,7 +36,7 @@ use Evispa\ObjectMigration\VersionReader;
 
 class VersionConverterTest extends \PHPUnit_Framework_TestCase
 {
-    public function testVersionConvert()
+    public function testVersionConvertFromV1ToV4()
     {
         $converter = new VersionConverter(
             new VersionReader(new AnnotationReader()),
@@ -54,7 +53,7 @@ class VersionConverterTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($codeV1->code, $codeV4->code);
     }
 
-    public function testVersionConvertBack()
+    public function testConvertFromV4ToV1()
     {
         $converter = new VersionConverter(
             new VersionReader(new AnnotationReader()),
@@ -71,12 +70,16 @@ class VersionConverterTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($codeV1->code, $codeV4->code);
     }
 
-    public function testVersionConvertToFrom()
+    public function testConvertFromV4ToV0()
     {
         $converter = new VersionConverter(
-            new VersionReader(new AnnotationReader()),
+            new VersionReader(
+                new AnnotationReader()
+            ),
             'Evispa\ObjectMigration\Tests\Mock\MockCodeV0',
-            array('locale' => 'en')
+            array(
+                'locale' => 'en'
+            )
         );
 
         $codeV4 = new MockCodeV4();
