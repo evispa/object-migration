@@ -132,6 +132,12 @@ class VersionConverter
     public function migrateFrom($otherObject)
     {
         $otherObjectClass = get_class($otherObject);
+
+        // same object no migrations needed
+        if ($otherObjectClass === $this->className) {
+            return $otherObject;
+        }
+
         $versionPath = new VersionPathSearch($this->reader);
         $migrations = $versionPath->find($otherObjectClass, $this->className);
 
