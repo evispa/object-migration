@@ -293,6 +293,13 @@ class VersionReader
         return $migrationMethods;
     }
 
+    /**
+     * Find all the options required for all the migrations for this class.
+     *
+     * @param string $className Class name.
+     *
+     * @return array
+     */
     public function getRequiredClassOptions($className)
     {
         $requiredOptions = array();
@@ -338,4 +345,35 @@ class VersionReader
         return $requiredOptions;
     }
 
+    public function getAllowedClassInputVersions($targetClassName) {
+        $scannedClasses = array();
+        $scanClasses = array($targetClassName);
+        $versions = array();
+
+        while (0 < count($scanClasses)) {
+            $newScanClasses = array();
+
+            foreach ($scanClasses as $className) {
+                $version = $this->getClassVersion($className);
+                $versions[$version] = $className;
+
+                $methods = $this->getClassMigrationMethodInfo($className);
+
+                foreach ($methods as $method) {
+                    $sourceClass = $method->annotation->from;
+                    if (null !== $sourceClass
+                        && !isset($newScanClasses[$sourceClass])
+                        && !isset($scannedClasses[$sourceClass])
+                    ) {
+                        $newScanClasses[$method->annotation->from] = true;
+                        $scannedClasses[$sourceClass] = true;
+                    }
+                }
+            }
+
+            $scanClasses = array_keys($newScanClasses);
+        }
+
+        return $versions;
+    }
 }

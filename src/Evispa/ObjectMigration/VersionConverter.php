@@ -175,4 +175,8 @@ class VersionConverter
 
         return $otherObject;
     }
+
+    public function getAllowedInputVersions() {
+        return $this->reader->getAllowedClassInputVersions($this->className);
+    }
 }

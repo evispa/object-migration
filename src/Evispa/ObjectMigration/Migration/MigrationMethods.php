@@ -27,18 +27,20 @@
 
 namespace Evispa\ObjectMigration\Migration;
 
+use Evispa\ObjectMigration\Action\MigrationActionInterface;
+
 /**
  * Stores a list of migration methods for a class.
  */
 class MigrationMethods
 {
     /**
-     * @var \Evispa\ObjectMigration\Action\MigrationActionInterface[]
+     * @var MigrationActionInterface[]
      */
     public $from = array();
 
     /**
-     * @var \Evispa\ObjectMigration\Action\MigrationActionInterface[]
+     * @var MigrationActionInterface[]
      */
     public $to = array();
 }
