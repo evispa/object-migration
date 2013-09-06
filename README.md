@@ -56,7 +56,7 @@ class V2
 ```
 
 Use VersionConverter tool to check object version or migrate object to another available version:
-
+ 
 ```php
 
 use Doctrine\Common\Annotations\AnnotationReader;
