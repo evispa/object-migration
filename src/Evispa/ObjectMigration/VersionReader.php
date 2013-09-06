@@ -345,7 +345,7 @@ class VersionReader
         return $requiredOptions;
     }
 
-    public function getAllowedClassInputVersions($targetClassName) {
+    private function getClassInputOutputVersions($targetClassName, $annotationClassGetter) {
         $scannedClasses = array();
         $scanClasses = array($targetClassName);
         $versions = array();
@@ -360,12 +360,12 @@ class VersionReader
                 $methods = $this->getClassMigrationMethodInfo($className);
 
                 foreach ($methods as $method) {
-                    $sourceClass = $method->annotation->from;
+                    $sourceClass = $annotationClassGetter($method->annotation);
                     if (null !== $sourceClass
                         && !isset($newScanClasses[$sourceClass])
                         && !isset($scannedClasses[$sourceClass])
                     ) {
-                        $newScanClasses[$method->annotation->from] = true;
+                        $newScanClasses[$sourceClass] = true;
                         $scannedClasses[$sourceClass] = true;
                     }
                 }
@@ -375,5 +375,31 @@ class VersionReader
         }
 
         return $versions;
+    }
+
+    /**
+     * Get all versions which have migration path to specified class.
+     *
+     * @param string $targetClassName
+     *
+     * @return array
+     */
+    public function getAllowedClassInputVersions($targetClassName) {
+        return $this->getClassInputOutputVersions($targetClassName, function($annotation) {
+            return $annotation->from;
+        });
+    }
+
+    /**
+     * Get possible migration versions for specified class name.
+     *
+     * @param string $targetClassName
+     *
+     * @return array
+     */
+    public function getAllowedClassOutputVersions($targetClassName) {
+        return $this->getClassInputOutputVersions($targetClassName, function($annotation) {
+            return $annotation->to;
+        });
     }
 }
