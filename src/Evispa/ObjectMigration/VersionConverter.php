@@ -31,8 +31,7 @@ use Evispa\ObjectMigration\Exception\VersionPathNotFoundException;
 use Evispa\ObjectMigration\VersionPath\VersionPathSearch;
 
 /**
- *
- *
+ * Converts object to different related version.
  */
 class VersionConverter
 {
@@ -87,25 +86,23 @@ class VersionConverter
     /**
      * Migrate object to specified version.
      *
-     * @param mixed  $object       Object instance.
-     * @param string $otherVersion Version name.
+     * @param mixed  $object                    Object instance.
+     * @param string $otherVersionClassName     Target class name.
      *
      * @throws \LogicException
      * @throws Exception\VersionPathNotFoundException
      *
      * @return mixed Migrated object.
      */
-    public function migrateTo($object, $otherVersion)
-    {
+    public function migrateToClass($object, $otherVersionClassName) {
         $className = get_class($object);
 
         if ($className !== $this->className) {
             throw new \LogicException('Converter for class "' . $className . '" can not migrate "' . $className . '" objects.');
         }
 
-        $versionPath = new VersionPathSearch($this->reader);
-        $otherVersionClassName = $this->reader->getClassNameByVersion($className, $otherVersion);
         if ($otherVersionClassName) {
+            $versionPath = new VersionPathSearch($this->reader);
             $migrations = $versionPath->find($className, $otherVersionClassName);
 
             if (count($migrations) === 0) {
@@ -115,6 +112,33 @@ class VersionConverter
             foreach ($migrations as $migration) {
                 $object = $migration->action->run($object, $this->options);
             }
+        }
+
+        return $object;
+    }
+
+    /**
+     * Migrate object to specified version.
+     *
+     * @param mixed  $object       Object instance.
+     * @param string $otherVersion Version name.
+     *
+     * @throws \LogicException
+     * @throws Exception\VersionPathNotFoundException
+     *
+     * @return mixed Migrated object.
+     */
+    public function migrateToVersion($object, $otherVersion)
+    {
+        $className = get_class($object);
+
+        if ($className !== $this->className) {
+            throw new \LogicException('Converter for class "' . $className . '" can not migrate "' . $className . '" objects.');
+        }
+
+        $otherVersionClassName = $this->reader->getClassNameByVersion($className, $otherVersion);
+        if ($otherVersionClassName) {
+            $object = $this->migrateToClass($object, $otherVersionClassName);
         }
 
         return $object;

@@ -45,7 +45,7 @@ class V2
     /**
      * @Api\Migration(from="V1")
      */
-    public static function fromV1(V1 $other) {
+    public static function fromV1(V1 $other, $options) {
         $obj = new self();
 
         $obj->id = $other->slug;
