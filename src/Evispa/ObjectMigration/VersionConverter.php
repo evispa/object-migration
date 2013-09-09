@@ -101,6 +101,10 @@ class VersionConverter
             throw new \LogicException('Converter for class "' . $className . '" can not migrate "' . $className . '" objects.');
         }
 
+        if ($className === $otherVersionClassName) {
+            return $object;
+        }
+
         if ($otherVersionClassName) {
             $versionPath = new VersionPathSearch($this->reader);
             $migrations = $versionPath->find($className, $otherVersionClassName);
