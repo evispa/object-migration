@@ -41,4 +41,9 @@ class CreateAction implements MigrationActionInterface
     {
         return $this->method->invoke(null, $object, $options);
     }
+
+    public function getMethod()
+    {
+        return $this->method;
+    }
 }

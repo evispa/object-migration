@@ -130,7 +130,7 @@ class VersionPathSearch
                 $annotations[] = $this->annotations[$this->getEdgeId($edge)];
             }
         } catch (OutOfBoundsException $e) {
-
+            return null;
         }
 
         return $annotations;

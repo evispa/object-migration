@@ -32,7 +32,7 @@ class CloneAction implements MigrationActionInterface
     /** @var  \ReflectionMethod */
     public $method;
 
-    public function __construct($method)
+    public function __construct(\ReflectionMethod $method)
     {
         $this->method = $method;
     }
@@ -40,5 +40,10 @@ class CloneAction implements MigrationActionInterface
     public function run($object, $options = array())
     {
         return $this->method->invoke($object, $options);
+    }
+
+    public function getMethod()
+    {
+        return $this->method;
     }
 }
