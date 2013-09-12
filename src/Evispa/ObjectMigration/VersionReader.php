@@ -41,6 +41,9 @@ class VersionReader
 
     private $reader;
 
+    /**
+     * @param \Doctrine\Common\Annotations\Reader $reader
+     */
     public function __construct(Reader $reader)
     {
         $this->reader = $reader;
